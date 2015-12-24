@@ -35,9 +35,21 @@ class MyAPI extends API
                         array_push($data, $row);
                     }
                 }
-                echo json_encode($data, JSON_PRETTY_PRINT);
-            } else if (count($this->args) == 1){
-                echo $this->args[0];
+                return $data;
+            } else if (count($this->args) == 1 && strlen($this->verb) == 0){
+                $db = $this->connectDB();
+
+                $statement = $db->prepare("SELECT * FROM items WHERE itemid = :id");
+                $statement->execute(Array(':id' => $this->args[0]));
+
+                if($statement){
+                    while($row = $statement->fetch()){
+                        return $row;
+                    }
+                } else{
+                    $errorArray = $db->errorInfo();
+                    die("DB error: " . $errorArray[2]);
+                }
             }
         } else {
             return "Only accepts GET requests";
