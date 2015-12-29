@@ -28,7 +28,7 @@ abstract class API
      * Property: file
      * Stores the input of the PUT request
      */
-     protected $file = Null;
+    protected $file = Null;
 
     /**
      * Constructor: __construct
@@ -58,6 +58,7 @@ abstract class API
 
         switch($this->method) {
         case 'DELETE':
+            break;
         case 'POST':
             $this->request = $this->_cleanInputs($_POST);
             break;
