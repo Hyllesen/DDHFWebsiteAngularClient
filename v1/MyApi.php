@@ -100,13 +100,20 @@ class MyAPI extends API
 
                 $prepareString = "UPDATE items SET ";
                 $executeArray = Array();
-
+                $acceptedUpdates = Array("itemheadline", 
+                                         "itemdescription",
+                                         "itemreceived",
+                                         "itemdatingto", 
+                                         "itemdatingfrom",
+                                         "donator",
+                                         "producer",
+                                         "postnummer");
+                
                 foreach ($data as $key => $value) {
-                    if ( $key == "itemid" || $key == "created_at" ){
-                        continue;
+                    if(in_array($key, $acceptedUpdates)){
+                        $prepareString .= $key . " = :" . $key . ", ";
+                        $executeArray[":" . $key] = $value;
                     }
-                    $prepareString .= $key . " = :" . $key . ", ";
-                    $executeArray[":" . $key] = $value;
                 }
                 
                 $prepareString = substr($prepareString, 0, -2);
