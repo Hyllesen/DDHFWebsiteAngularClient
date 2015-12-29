@@ -102,12 +102,25 @@ class MyAPI extends API
                 $executeArray = Array();
 
                 foreach ($data as $key => $value) {
+                    if ( $key == "itemid" || $key == "created_at" ){
+                        continue;
+                    }
                     $prepareString .= $key . " = :" . $key . ", ";
                     $executeArray[":" . $key] = $value;
                 }
-                $prepareString = substr($prepareString, 0, -1);
+                
+                $prepareString = substr($prepareString, 0, -2);
+                $prepareString .= " WHERE itemid = :itemid";
+                $executeArray['itemid'] = $this->args[0];
+                $statement = $db->prepare($prepareString);
+                $statement->execute($executeArray);
 
-
+                if ($statement){
+                    return "succes";
+                }else{
+                    $errorArray = $db->errorInfo();
+                    die("DB error: " . $errorArray[2]);
+                }
             }
             
         } else {
