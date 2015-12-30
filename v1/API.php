@@ -34,6 +34,9 @@ abstract class API
      * Constructor: __construct
      * Allow for CORS, assemble and pre-process the data
      */
+
+    protected $status = 200;
+
     public function __construct($request) {
         header("Access-Control-Allow-Orgin: *");
         header("Access-Control-Allow-Methods: *");
@@ -82,8 +85,8 @@ abstract class API
         return $this->_response("No Endpoint: $this->endpoint", 404);
     }
 
-    private function _response($data, $status = 200) {
-        header("HTTP/1.1 " . $status . " " . $this->_requestStatus($status));
+    private function _response($data) {
+        header("HTTP/1.1 " . $this->status . " " . $this->_requestStatus($this->status));
         return json_encode($data);
     }
 
@@ -102,6 +105,8 @@ abstract class API
     private function _requestStatus($code) {
         $status = array(  
             200 => 'OK',
+            201 => 'Created',
+            401 => 'Unauthorized',
             404 => 'Not Found',   
             405 => 'Method Not Allowed',
             500 => 'Internal Server Error',
