@@ -1,6 +1,8 @@
 <?php
 abstract class API
 {
+    // Taken from tutorial at: http://coreymaynard.com/blog/creating-a-restful-api-with-php/
+
     /**
      * Property: method
      * The HTTP method this request was made in, either GET, POST, PUT or DELETE
