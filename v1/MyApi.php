@@ -1,13 +1,11 @@
 <?php
 require_once 'API.php';
+require_once '../Config.php';
 class MyAPI extends API
 {
     protected $User;
-    protected $host = "localhost";
-    protected $dbUsername = "root";
-    protected $dbPassword = "root";
-    protected $dbName = "DDHF";
-    protected $authorizedID = "56837dedd2d76438906140";
+
+    protected $config; 
 
     protected  $updateableFields = Array("itemheadline", 
                                          "itemdescription",
@@ -21,17 +19,16 @@ class MyAPI extends API
     protected $supportedImageFormats = Array("image/png", "image/jpeg", "image/jpg");
     protected $supportedAudioFormats = Array("audio/mp4", "audio/3gp", "audio/3GPP", "audio/MPEG-4", "audio/aac");
     public function __construct($request, $origin) {
+        $this->config = new Config();
         parent::__construct($request);
 
     }
 
-    /**
-     * Example of an Endpoint
-     */
+
      protected function items() {
-        if (!isset($_GET['id']) || $_GET['id'] != "56837dedd2d76438906140"){
+        if (!isset($_GET['id']) || $_GET['id'] != $this->config->authorizedID){
             $this->status = 401;
-            return "Access denied";
+            return $this->config->authorizedID . "  -  " . $_GET['id'] . "   -  Access denied";
         }
         if ($this->method == 'GET') {
             if (strlen($this->verb) == 0 && count($this->args) == 0){
@@ -75,9 +72,11 @@ class MyAPI extends API
                     $audioArray = array();
                     while($row = $statement->fetch()){
                         if($row['type'] == "audio"){
-                            $audioArray['audio_' . count($audioArray)] = "msondrup.dk/api/uploads/" . $row['filename'];
+                            $audioArray['audio_' . count($audioArray)] = array("filename" => $row['filename'],
+                                                                                "href" => "http://msondrup.dk/api/uploads/" . $row['filename']);
                         } elseif($row['type'] == "image"){
-                            $imageArray['image_' . count($imageArray)] = "msondrup.dk/api/uploads/" . $row['filename'];
+                            $imageArray['image_' . count($imageArray)] = array("filename" => $row['filename'],
+                                                                                "href" => "http://msondrup.dk/api/uploads/" . $row['filename']);
                         }
                     }
                     if(count($imageArray) != 0){
@@ -208,7 +207,7 @@ class MyAPI extends API
                     return "File creation failed";
                 }
 
-                return array("savedAt" => "msondrup.dk/api/uploads/" . $filename);
+                return array("filename" => $filename, "savedAt" => "http://msondrup.dk/api/uploads/" . $filename);
             }
             
         } elseif( $this->method == "DELETE" && strlen($this->verb) == 0 && count($this->args) == 1) {
@@ -238,7 +237,7 @@ class MyAPI extends API
 
      private function connectDB(){
         try{
-            $db = new PDO("mysql:host=$this->host;dbname=$this->dbName", $this->dbUsername, $this->dbPassword);
+            $db = new PDO("mysql:host=" . $this->config->host . ";dbname=" . $this->config->dbName, $this->config->dbUsername, $this->config->dbPassword);
             $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch(PDOException $e){
             die("ERROR!: " . $e->getMessage());
