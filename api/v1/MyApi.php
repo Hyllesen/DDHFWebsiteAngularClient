@@ -22,6 +22,7 @@ class MyAPI extends API
     protected $supportedAudioFormats = Array("audio/mp4", "audio/3gp", "audio/3GPP", "audio/MPEG-4", "audio/aac", "audio/mp3");
     protected $audioFormats = Array("mp4", "3gp", "aac", "mp3");
     public function __construct($request, $origin) {
+        echo "Constructed";
         $this->config = new Config();
         parent::__construct($request);
 
