@@ -41,14 +41,6 @@ class MyAPI extends API
                 // Conenct to the database
                 $db = $this->connectDB();
 
-                // query the database for the items
-                /*$query = $db->query("SELECT items.itemid, items.itemheadline, files.filename 
-                                    FROM items 
-                                    LEFT JOIN files ON files.itemid=items.itemid
-                                    WHERE (files.type = 'IMAGE' OR files.type = 'AUDIO' OR files.type IS NULL) GROUP BY items.itemid
-                                    ORDER BY items.itemid DESC");
-                */
-
                 $query = $db->query("SELECT items.itemid, items.itemheadline, files.filename
                                     FROM items 
                                     LEFT JOIN files ON files.itemid=items.itemid
@@ -66,7 +58,7 @@ class MyAPI extends API
                             if($row['filename'] == NULL){
                                 $filename = null;
                             } else{
-                                $filename = "http://msondrup.dk/api/uploads/" . $row['filename'];
+                                $filename = $this->config->uploadURL . $row['filename'];
                             }
                             $tempArray = array("detailsuri" => "/items/" . $row['itemid'], 
                                                "itemid" => $row['itemid'],
@@ -94,7 +86,7 @@ class MyAPI extends API
                                 } else if(in_array(substr($row['filename'], strlen($row['filename'])-3), $this->audioFormats)) {
                                     $filename = null;
                                 } else{
-                                    $filename = "http://msondrup.dk/api/uploads/" . $row['filename'];
+                                    $filename = "http://msondrup.dk/api/uploads/" . $row['filename'];    //Hardcoded URL --> BAD
                                 }
                                 $tempArray = array("detailsuri" => "/items/" . $row['itemid'], 
                                                    "itemid" => $row['itemid'],
