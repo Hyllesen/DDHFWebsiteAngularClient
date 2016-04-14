@@ -75,7 +75,8 @@ abstract class API
             $this->file = file_get_contents("php://input");
             break;
         default:
-            $this->_response('Invalid Method', 405);
+            $this->status = 405;
+            $this->_response('Invalid Method');
             break;
         }
     }
@@ -84,12 +85,13 @@ abstract class API
         if (method_exists($this, $this->endpoint)) {
             return $this->_response($this->{$this->endpoint}($this->args));
         }
-        return $this->_response("No Endpoint: $this->endpoint", 404);
+        $this->status = 404;
+        return $this->_response("No Endpoint: $this->endpoint");
     }
 
     private function _response($data) {
         header("HTTP/1.1 " . $this->status . " " . $this->_requestStatus($this->status));
-        return json_encode($data);
+        return json_encode($data, JSON_UNESCAPED_SLASHES);
     }
 
     private function _cleanInputs($data) {

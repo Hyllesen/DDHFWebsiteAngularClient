@@ -14,10 +14,13 @@ class MyAPI extends API
                                          "itemdatingfrom",
                                          "donator",
                                          "producer",
-                                         "postnummer");
+                                         "postnummer",
+                                         "emnegruppe",
+                                         "betegnelse");
 
     protected $supportedImageFormats = Array("image/png", "image/jpeg", "image/jpg");
-    protected $supportedAudioFormats = Array("audio/mp4", "audio/3gp", "audio/3GPP", "audio/MPEG-4", "audio/aac");
+    protected $supportedAudioFormats = Array("audio/mp4", "audio/3gp", "audio/3GPP", "audio/MPEG-4", "audio/aac", "audio/mp3");
+    protected $audioFormats = Array("mp4", "3gp", "aac", "mp3");
     public function __construct($request, $origin) {
         $this->config = new Config();
         parent::__construct($request);
@@ -26,7 +29,7 @@ class MyAPI extends API
 
 
      protected function items() {
-        if (!isset($_GET['id']) || $_GET['id'] != $this->config->authorizedID){
+        if (!isset($_GET['userID']) || $_GET['userID'] != $this->config->authorizedID){
             $this->status = 401;
             return $this->config->authorizedID . "  -  " . $_GET['id'] . "   -  Access denied";
         }
@@ -39,7 +42,18 @@ class MyAPI extends API
                 $db = $this->connectDB();
 
                 // query the database for the items
-                $query = $db->query("SELECT * FROM items");
+                /*$query = $db->query("SELECT items.itemid, items.itemheadline, files.filename 
+                                    FROM items 
+                                    LEFT JOIN files ON files.itemid=items.itemid
+                                    WHERE (files.type = 'IMAGE' OR files.type = 'AUDIO' OR files.type IS NULL) GROUP BY items.itemid
+                                    ORDER BY items.itemid DESC");
+                */
+
+                $query = $db->query("SELECT items.itemid, items.itemheadline, files.filename
+                                    FROM items 
+                                    LEFT JOIN files ON files.itemid=items.itemid
+                                    ORDER BY items.itemid DESC");
+                
                 
                 // check if query went well
                 if(!$query){
@@ -48,11 +62,48 @@ class MyAPI extends API
                 } else{
                     // push the data from the query to the array
                     while($row = $query->fetch()){
-                        $tempArray = array("detailsuri" => "/items/" . $row['itemid'], 
-                                           "itemheadline" => $row['itemheadline'],
-                                           "itemdescription" => $row['itemdescription']);
-                        array_push($data, $tempArray);
-                    }
+                        if(!isset($data[0])){
+                            if($row['filename'] == NULL){
+                                $filename = null;
+                            } else{
+                                $filename = "http://msondrup.dk/api/uploads/" . $row['filename'];
+                            }
+                            $tempArray = array("detailsuri" => "/items/" . $row['itemid'], 
+                                               "itemid" => $row['itemid'],
+                                               "itemheadline" => $row['itemheadline'],
+                                               "defaultimage" => $filename);
+                            array_push($data, $tempArray);
+                        }else{
+                            if($row['itemid'] != $data[count($data)-1]['itemid']){
+                                if($row['filename'] == NULL){
+                                    $filename = null;
+                                } else if(in_array(substr($row['filename'], strlen($row['filename'])-3), $this->audioFormats)) {
+                                    $filename = null;
+                                } else{
+                                    $filename = "http://msondrup.dk/api/uploads/" . $row['filename'];
+                                }
+                                $tempArray = array("detailsuri" => "/items/" . $row['itemid'], 
+                                                   "itemid" => $row['itemid'],
+                                                   "itemheadline" => $row['itemheadline'],
+                                                   "defaultimage" => $filename);
+                                array_push($data, $tempArray);
+                            } else{
+                                if($data[count($data)-1]['defaultimage'] == null){
+                                    if($row['filename'] == NULL){
+                                    $filename = null;
+                                } else if(in_array(substr($row['filename'], strlen($row['filename'])-3), $this->audioFormats)) {
+                                    $filename = null;
+                                } else{
+                                    $filename = "http://msondrup.dk/api/uploads/" . $row['filename'];
+                                }
+                                $tempArray = array("detailsuri" => "/items/" . $row['itemid'], 
+                                                   "itemid" => $row['itemid'],
+                                                   "itemheadline" => $row['itemheadline'],
+                                                   "defaultimage" => $filename);
+                                }
+                            }
+                        }
+                    } 
                 }
                 return $data;
             } else if (count($this->args) == 1 && strlen($this->verb) == 0){
@@ -96,6 +147,7 @@ class MyAPI extends API
             $headers = apache_request_headers();
             // check if the request is a create request.
             if(count($this->args) == 0 && strlen($this->verb) == 0 && $headers['Content-Type'] == "application/json"){
+                // Method to create items
                 $input = file_get_contents('php://input');
                 $data = json_decode($input, true);
                 
@@ -107,13 +159,15 @@ class MyAPI extends API
                 $donator = (isset($data['donator']) ? $data['donator'] : null);
                 $producer = (isset($data['producer']) ? $data['producer'] : null);
                 $postnummer = (isset($data['postnummer']) ? $data['postnummer'] : null);
+                $emnegruppe = (isset($data['emnegruppe']) ? $data['emnegruppe'] : null);
+                $betegnelse = (isset($data['betegnelse']) ? $data['betegnelse'] : null);
 
                 $db = $this->connectDB();
 
                 $statement = $db->prepare("INSERT INTO items (itemheadline, itemdescription, itemreceived, itemdatingfrom,
-                                                itemdatingto, donator, producer, postnummer)
+                                                itemdatingto, donator, producer, postnummer, emnegruppe, betegnelse)
                                                 values(:itemheadline, :itemdescription, :itemreceived, :itemdatingfrom,
-                                                        :itemdatingto, :donator, :producer, :postnummer);");
+                                                        :itemdatingto, :donator, :producer, :postnummer, :emnegruppe, :betegnelse);");
                 $statement->execute(Array(':itemheadline' => $itemheadline,
                                           ':itemdescription' => $itemdescription,
                                           ':itemreceived' => $itemreceived,
@@ -121,12 +175,19 @@ class MyAPI extends API
                                           'itemdatingto' => $itemdatingto,
                                           'donator' => $donator,
                                           'producer' => $producer,
-                                          'postnummer' => $postnummer));
+                                          'postnummer' => $postnummer,
+                                          'emnegruppe' => $emnegruppe,
+                                          'betegnelse' => $betegnelse));
                 
                 if($statement){
                     // TODO skriv den oprettede række ud.
+                    $statement = $db->prepare("SELECT * FROM items WHERE itemid = :itemid");
+                    $statement->execute(array(":itemid" => $db->lastInsertId()));
                     $this->status = 201;
-                    return "succes";
+                    while($row = $statement->fetch()){
+                        return $row;
+                    }
+                    
                 }else{
                     $this->status = 500;
                     return "Database error";
@@ -155,8 +216,12 @@ class MyAPI extends API
                 $statement->execute($executeArray);
 
                 if ($statement){
-                    // TODO Skriv hele det opdaterede objekt ud
-                    return "succes";
+                    $statement = $db->prepare("SELECT * FROM items WHERE itemid = :itemid");
+                    $statement->execute(array(":itemid" => $db->lastInsertId()));
+                    
+                    while($row = $statement->fetch()){
+                        return $row;
+                    }
                 }else{
                     $errorArray = $db->errorInfo();
                     die("DB error: " . $errorArray[2]);
