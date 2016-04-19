@@ -1,11 +1,12 @@
-import {Component} from 'angular2/core';
+import {Component, OnInit} from 'angular2/core';
 import {Genstand} from './Genstand';
 import {GenstandDetailComponent} from './genstand-detail.component';
+import {GenstandService} from './genstand.service';
 
 
 @Component({
     selector: 'my-app',
-	template: `
+  template: `
   <h1>{{title}}</h1>
   <h2>Genstande</h2>
   <ul class="genstande">
@@ -75,30 +76,27 @@ import {GenstandDetailComponent} from './genstand-detail.component';
   }
 `
 
-], 
-  directives: [GenstandDetailComponent]
+  ],
+  directives: [GenstandDetailComponent],
+  providers: [GenstandService]
 
 })
-export class AppComponent {
-	public genstande = GENSTANDE;
-	title = 'DDHF Genstandsadministration';
+export class AppComponent implements OnInit {
+
+  genstande: Genstand[];
+  title = 'DDHF Genstandsadministration';
   valgtGenstand: Genstand;
+
+  constructor(private _genstandService: GenstandService) {}
+
+  getGenstande() {
+    this._genstandService.getGenstande().then(genstande => this.genstande = genstande);
+  }
+
+  ngOnInit() {
+    this.getGenstande();
+  }
 
   onSelect(genstand: Genstand) { this.valgtGenstand = genstand; }
 
 }
-
-var GENSTANDE: Genstand[] = [
-	{ "id": 11, "headline": "C64" },
-	{ "id": 12, "headline": "Sega dreamcast" },
-	{ "id": 13, "headline": "Nintendo" },
-	{ "id": 14, "headline": "Amiga A500" },
-	{ "id": 15, "headline": "Compaq" },
-	{ "id": 16, "headline": "Dell" },
-	{ "id": 17, "headline": "HP" },
-	{ "id": 18, "headline": "Atari" },
-	{ "id": 19, "headline": "Super Nintendo" },
-	{ "id": 20, "headline": "Xbox" }
-];
-
-
