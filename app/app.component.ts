@@ -1,9 +1,7 @@
 import {Component} from 'angular2/core';
+import {Genstand} from './Genstand';
+import {GenstandDetailComponent} from './genstand-detail.component';
 
-export class Genstand {
-	id: number;
-	headline: string;
-}
 
 @Component({
     selector: 'my-app',
@@ -11,26 +9,19 @@ export class Genstand {
   <h1>{{title}}</h1>
   <h2>Genstande</h2>
   <ul class="genstande">
-  	<li *ngFor="#genstand of genstande" (click) = "onSelect(genstand)" >
+  	<li *ngFor="#genstand of genstande"  
+     [class.selected]="genstand === valgtGenstand"
+     (click)="onSelect(genstand)">
   	<span class="badge">{{genstand.id}}</span> {{genstand.headline}}
-	</li>
-
+	  </li>
   </ul>
-<div *ngIf="valgtGenstand">
-  <h2>{{valgtGenstand.name}} details!</h2>
-  <div><label>id: </label>{{valgtGenstand.id}}</div>
-  <div>
-    <label>Titel: </label>
-    <input [(ngModel)]="valgtGenstand.headline" placeholder="Titel"/>
-  </div>
-</div>
-
+  <genstand-detail [genstand]="valgtGenstand">Hej</genstand-detail>
   `,
 
   styles: [`
   .selected {
     background-color: #CFD8DC !important;
-    color: white;
+    color: black;
   }
   .genstande {
     margin: 0 0 2em 0;
@@ -50,9 +41,14 @@ export class Genstand {
     color: #B0C9CE;
 
   }
+
+  .genstande li.selected {
+    color:black;
+  }
+
   .genstande li.selected:hover {
     background-color: #BBD8DC !important;
-    color: white;
+    color:black;
   }
   .genstande li:hover {
     color: #607D8B;
@@ -77,8 +73,10 @@ export class Genstand {
     margin-right: .8em;
     border-radius: 4px 0 0 4px;
   }
-`]
+`
 
+], 
+  directives: [GenstandDetailComponent]
 
 })
 export class AppComponent {
