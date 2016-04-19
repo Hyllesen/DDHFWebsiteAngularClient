@@ -11,17 +11,20 @@ export class Genstand {
   <h1>{{title}}</h1>
   <h2>Genstande</h2>
   <ul class="genstande">
-  	<li *ngFor="#genstand of genstande" >
+  	<li *ngFor="#genstand of genstande" (click) = "onSelect(genstand)" >
   	<span class="badge">{{genstand.id}}</span> {{genstand.headline}}
 	</li>
 
   </ul>
-  <h2>{{genstand.headline}} details!</h2>
-  <div><label>id: </label>{{genstand.id}}</div>
+<div *ngIf="valgtGenstand">
+  <h2>{{valgtGenstand.name}} details!</h2>
+  <div><label>id: </label>{{valgtGenstand.id}}</div>
   <div>
-  	<label>Titel: </label>
-  	<input [(ngModel)]="genstand.headline" placeholder="Titel">
-  	</div>
+    <label>Titel: </label>
+    <input [(ngModel)]="valgtGenstand.headline" placeholder="Titel"/>
+  </div>
+</div>
+
   `,
 
   styles: [`
@@ -81,10 +84,10 @@ export class Genstand {
 export class AppComponent {
 	public genstande = GENSTANDE;
 	title = 'DDHF Genstandsadministration';
-	genstand: Genstand = {
-		id: 1,
-		headline: 'Apple II'
-	};
+  valgtGenstand: Genstand;
+
+  onSelect(genstand: Genstand) { this.valgtGenstand = genstand; }
+
 }
 
 var GENSTANDE: Genstand[] = [
@@ -99,3 +102,5 @@ var GENSTANDE: Genstand[] = [
 	{ "id": 19, "headline": "Super Nintendo" },
 	{ "id": 20, "headline": "Xbox" }
 ];
+
+
