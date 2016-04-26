@@ -83,14 +83,20 @@ import {GenstandService} from './genstand.service';
 })
 export class AppComponent implements OnInit {
 
-  genstande: Genstand[];
+  public genstande: Genstand[];
   title = 'DDHF Genstandsadministration';
   valgtGenstand: Genstand;
 
   constructor(private _genstandService: GenstandService) {}
 
   getGenstande() {
-    this._genstandService.getGenstande().then(genstande => this.genstande = genstande);
+    this._genstandService.getGenstande().subscribe( res => {
+    var rj = res.json();
+
+    if (rj.sanity === 'GOOD') {
+      this.genstande = rj.data.default;
+    }
+    });
   }
 
   ngOnInit() {

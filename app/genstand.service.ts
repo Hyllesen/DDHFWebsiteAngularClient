@@ -1,9 +1,14 @@
 import {Injectable} from 'angular2/core';
-import {GENSTANDE} from './mock-genstande';
+import {Http, HTTP_PROVIDERS, Request, RequestMethod, Headers } from 'angular2/http';
+
 
 @Injectable()
 export class GenstandService {
+	
+	private apiUrl = "http://fbballin.com/v1/items"
+	
+	constructor(public http: Http) {}
 	getGenstande() {
-		return Promise.resolve(GENSTANDE);
+		return this.http.get(this.apiUrl);
 	}
 }
