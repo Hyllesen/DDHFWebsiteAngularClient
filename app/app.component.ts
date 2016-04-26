@@ -16,7 +16,7 @@ import {GenstandService} from './genstand.service';
   	<span class="badge">{{genstand.id}}</span> {{genstand.headline}}
 	  </li>
   </ul>
-  <genstand-detail [genstand]="valgtGenstand">Hej</genstand-detail>
+  <genstand-detail [genstand]="valgtGenstand"></genstand-detail>
   `,
 
   styles: [`
