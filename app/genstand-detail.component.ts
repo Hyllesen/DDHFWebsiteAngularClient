@@ -24,11 +24,11 @@ import {Genstand} from './Genstand';
     <div><label>Producent:</label> {{genstand.producer}}</div>
     <div><label>Dateret fra:</label> {{genstand.dating_from}}</div>
     <div><label>Dateret til:</label> {{genstand.dating_to}}</div>   
-<div><label>Billeder:</label> 
+    <div><label>Billeder:</label> 
       <span *ngFor="#image of genstand.images">
-        <img src="{{image.thumb}}">
+        <a href="{{image.full}}"><img src="{{image.thumb}}" alt="{{image.thumb}}"></a>
       </span> 
-    </div>
+    </div>      
   </div>
 	`
 })
