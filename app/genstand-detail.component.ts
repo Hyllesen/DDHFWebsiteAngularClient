@@ -11,8 +11,14 @@ import {Genstand} from './Genstand';
       <label>Titel: </label>
       <input [(ngModel)]="genstand.headline" placeholder="Titel"/>
     </div>
-    <div><label>Beskrivelse:</label> {{genstand.description}}</div>
-    <div><label>Donator:</label> {{genstand.donator}}</div>
+    <div>
+    <label>Beskrivelse:</label>
+     <input [(ngModel)]="genstand.description" />
+     </div>
+    <div>
+    <label>Donator:</label>
+      <input [(ngModel)]="genstand.donator" />
+    </div>
     <div><label>Postnr:</label> {{genstand.zipcode}}</div>    
     <div><label>Oprettet:</label> {{genstand.created_at}}</div>
     <div><label>Producent:</label> {{genstand.producer}}</div>
