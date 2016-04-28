@@ -26,7 +26,7 @@ import {Genstand} from './Genstand';
     <div><label>Dateret til:</label> {{genstand.dating_to}}</div>   
     <div><label>Billeder:</label> 
       <span *ngFor="#image of genstand.images">
-        <a href="{{image.full}}"><img src="{{image.thumb}}" alt="{{image.thumb}}"></a>
+        <a href="{{image.full}}" target="_blank"><img src="{{image.thumb}}" alt="{{image.thumb}}"></a>
       </span> 
     </div>      
   </div>
