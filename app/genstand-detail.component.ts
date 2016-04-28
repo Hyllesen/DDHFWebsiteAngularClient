@@ -1,5 +1,6 @@
 import {Component, Input} from 'angular2/core';
 import {Genstand} from './Genstand';
+import {GenstandService} from './genstand.service';
 
 @Component({
   selector: 'genstand-detail',
@@ -28,11 +29,21 @@ import {Genstand} from './Genstand';
       <span *ngFor="#image of genstand.images">
         <a href="{{image.full}}" target="_blank"><img src="{{image.thumb}}" alt="{{image.thumb}}"></a>
       </span> 
-    </div>      
+    </div>
+    <div>
+      <button (click)="clickUpdateItem($event)">Opdatér genstand i backend</button>
+    </div>
   </div>
-	`
+	`,
+  providers: [GenstandService]
 })
 export class GenstandDetailComponent {
 	@Input()
 	genstand: Genstand;
+  
+  constructor(private _genstandService: GenstandService) {}
+  
+  clickUpdateItem(event) {
+    this._genstandService.updateItem(this.genstand);
+  }
 }
