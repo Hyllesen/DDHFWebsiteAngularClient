@@ -20,11 +20,13 @@ import {GenstandService} from './genstand.service';
     <label>Donator:</label>
       <input [(ngModel)]="genstand.donator" />
     </div>
-    <div><label>Postnr:</label> {{genstand.zipcode}}</div>    
-    <div><label>Oprettet:</label> {{genstand.created_at}}</div>
-    <div><label>Producent:</label> {{genstand.producer}}</div>
-    <div><label>Dateret fra:</label> {{genstand.dating_from}}</div>
-    <div><label>Dateret til:</label> {{genstand.dating_to}}</div>   
+    <div><label>Producent:</label> <input [(ngModel)]="genstand.producer" /></div>
+    <div><label>Postnr:</label> <input [(ngModel)]="genstand.zipcode" /></div>    
+    <div><label>Modtaget:</label> <input [(ngModel)]="genstand.received_at.pretty" /></div>
+    <div><label>Dateret fra:</label> <input [(ngModel)]="genstand.dating_from.pretty" /></div>
+    <div><label>Dateret til:</label> <input [(ngModel)]="genstand.dating_to.pretty" /></div>  
+    <div><label>Opdateret:</label> {{genstand.updated_at.pretty}}</div> 
+    <div><label>Oprettet:</label> {{genstand.created_at.pretty}}</div> 
     <div><label>Billeder:</label> 
       <span *ngFor="#image of genstand.images">
         <a href="{{image.full}}" target="_blank"><img src="{{image.thumb}}" alt="{{image.thumb}}"></a>
