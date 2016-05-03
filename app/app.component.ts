@@ -8,15 +8,19 @@ import {GenstandService} from './genstand.service';
     selector: 'my-app',
   template: `
   <h1>{{title}}</h1>
-  <h2>Genstande</h2>
-  <ul class="genstande">
-  	<li *ngFor="#genstand of genstande"  
-     [class.selected]="genstand === valgtGenstand"
-     (click)="onSelect(genstand)">
-  	<span class="badge">{{genstand.id}}</span> {{genstand.headline}}
-	  </li>
-  </ul>
-  <genstand-detail [genstand]="valgtGenstand"></genstand-detail>
+  <div id="genstandDiv">
+    <h2>Genstande</h2>
+    <ul class="genstande">
+      <li *ngFor="#genstand of genstande"  
+      [class.selected]="genstand === valgtGenstand"
+      (click)="onSelect(genstand)">
+      <span class="badge">{{genstand.id}}</span> {{genstand.headline}}
+      </li>
+    </ul>
+  </div>
+  <div>
+    <genstand-detail [genstand]="valgtGenstand"></genstand-detail>
+  </div>
   `,
 
   styleUrls: ['app/app.component.css'],
